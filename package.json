@@ -1,0 +1,46 @@
+{
+  "name": "kysely-postgis",
+  "version": "0.0.1",
+  "description": "PostGis extension for Kysely",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "import": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "require": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "kysely": "^0.27.4",
+    "pg": "^8.12.0",
+    "prettier": "^3.3.3",
+    "tsup": "^8.2.4",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.1"
+  },
+  "dependencies": {
+    "@types/geojson": "^7946.0.14",
+    "@types/geojson-validation": "^1.0.3",
+    "geojson-validation": "^1.0.2",
+    "wkx": "^0.5.0"
+  },
+  "keywords": [
+    "kysely",
+    "postgres",
+    "postgis",
+    "sql",
+    "sql builder"
+  ],
+  "author": "Ananda Norindr <ananda.norindr@gmail.com>",
+  "license": "MIT"
+}
