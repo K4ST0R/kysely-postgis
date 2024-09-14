@@ -2,6 +2,7 @@
   "name": "kysely-postgis",
   "version": "0.0.1",
   "description": "PostGis extension for Kysely",
+  "repository": "https://github.com/K4ST0R/kysely-postgis.git",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -19,9 +20,13 @@
     "test": "vitest run",
     "build": "tsup"
   },
-  "devDependencies": {
+  "peerDependencies": {
     "kysely": "^0.27.4",
-    "pg": "^8.12.0",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "@types/geojson": "^7946.0.14",
+    "@types/geojson-validation": "^1.0.3",
     "prettier": "^3.3.3",
     "tsup": "^8.2.4",
     "tsx": "^4.19.1",
@@ -29,8 +34,6 @@
     "vitest": "^2.1.1"
   },
   "dependencies": {
-    "@types/geojson": "^7946.0.14",
-    "@types/geojson-validation": "^1.0.3",
     "geojson-validation": "^1.0.2",
     "wkx": "^0.5.0"
   },
