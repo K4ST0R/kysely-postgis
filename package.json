@@ -1,6 +1,6 @@
 {
   "name": "kysely-postgis",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "PostGis extension for Kysely",
   "repository": "https://github.com/K4ST0R/kysely-postgis.git",
   "main": "dist/index.js",
