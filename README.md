@@ -87,11 +87,30 @@ const query5 = db
   .compile();
 console.log(query5.sql, query5.parameters);
 //select ST_Area($1) as "geom" from "table" [ '{"type": "Polygon","coordinates": [[[100.0, 0.0],[101.0, 0.0],[101.0, 1.0],[100.0, 1.0][100.0, 0.0]]]}' ]
+
+// You can pass any additional parameters to a ST function
+// Be careful, theses parameters will simply be add at the end of the parameters
+const query6 = db
+  .selectFrom('table')
+  .select((eb) =>
+    stf(eb)
+      .buffer('geom', 1, {
+          additionalParameters: [eb.val('endcap=square join=round')],
+        })
+      .as('geom'),
+  )
+  .compile();
+console.log(query6.sql, query6.parameters);
+//select ST_Buffer("geom", $1, $2) as "geojson" from "etablissementIsochrone" [ 1, 'endcap=square join=round' ]
 ```
 
 ## Currently supported functions
 
-- area(geo column | Polygon/MultiPolygon /_object, string_/, { useSpheroid? }), see [postgis documentation](https://postgis.net/docs/ST_Area.html)
+- area(geo column | GeoJSON Polygon/MultiPolygon /_object, string_/, { useSpheroid? }), see [postgis documentation](https://postgis.net/docs/ST_Area.html)
 - asGeoJSON(column, { maxDecimalDigits?, options? }), see [postgis documentation](https://postgis.net/docs/ST_AsGeoJSON.html)
+- asText(geo column), see [postgis documentation](https://postgis.net/docs/ST_AsText.html)
+- boundary(geo column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_Boundary.html)
+- buffer(geo column | GeoJSON /_object, string_/, radius), see [postgis documentation](https://postgis.net/docs/ST_Buffer.html)
+- centroid(geo column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_Centroid.html)
 - geomFromGeoJSON(GeoJSON /_object, string or column name_/), see [postgis documentation](https://postgis.net/docs/ST_GeomFromGeoJSON.html)
 - geomFromText(WKT string, { srid? }), see [postgis documentation](http://www.postgis.net/docs/ST_GeomFromText.html)
