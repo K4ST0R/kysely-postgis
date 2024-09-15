@@ -1,4 +1,4 @@
-import { Geometry } from 'geojson';
+import { Geometry, MultiPolygon, Polygon } from 'geojson';
 import {
   ExpressionBuilder,
   ExpressionWrapper,
@@ -6,6 +6,7 @@ import {
   sql,
 } from 'kysely';
 import {
+  isGeoJSON,
   isNil,
   valueForGeoJSON,
   valueForWKT,
@@ -13,9 +14,9 @@ import {
 } from './utils';
 import { Options } from './index';
 
-type SRID = number;
+export type SRID = number;
 
-interface OptionsAsGeoJSON extends Options {
+export interface OptionsAsGeoJSON extends Options {
   maxDecimalDigits?: number;
   options?: number;
 }
@@ -52,7 +53,7 @@ export function geomFromGeoJSON<DB, TB extends keyof DB>(
   return eb.fn<string>('ST_GeomFromGeoJSON', [geo]);
 }
 
-interface OptionsFromGeoText extends Options {
+export interface OptionsFromGeoText extends Options {
   srid?: SRID;
 }
 
@@ -68,5 +69,25 @@ export function geomFromText<DB, TB extends keyof DB>(
     ...(isNil(optionsWithDefault.srid)
       ? []
       : [sql.val<number>(optionsWithDefault.srid)]),
+  ]);
+}
+
+export interface OptionsArea extends Options {
+  useSpheroid?: boolean;
+}
+
+export function area<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  value: Polygon | MultiPolygon | ReferenceExpression<DB, TB>,
+  options: Partial<OptionsArea> = {},
+): ExpressionWrapper<DB, TB, string> {
+  const optionsWithDefault = withDefaultOptions(options);
+  const isGeo = isGeoJSON(value);
+
+  return eb.fn<string>('ST_Area', [
+    isGeo ? geomFromGeoJSON(eb, value) : value,
+    ...(isNil(optionsWithDefault.useSpheroid)
+      ? []
+      : [sql.val<boolean>(optionsWithDefault.useSpheroid)]),
   ]);
 }

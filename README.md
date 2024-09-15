@@ -27,7 +27,7 @@ const db = new Kysely()<Database>({ dialect });
 //   validate: false,
 // });
 
-// Get a GeoJSON from geometry column
+// Returns a GeoJSON from geometry column
 const query1 = db
   .selectFrom('table')
   .select((eb) => stf(eb).asGeoJSON('column').as('geojson'))
@@ -73,10 +73,25 @@ const query4 = db
   .compile();
 console.log(query4.sql, query4.parameters);
 //select ST_GeomFromText($1) as "geom" from "table" [ 'POINT(1, 2)' ]
+
+// You need to use eb.val() to pass a GeoJSON string or the string will be considerate like a column
+const query5 = db
+  .selectFrom('table')
+  .select((eb) =>
+    stf(eb)
+      .area(eb.val(`{"type": "Polygon","coordinates": [
+        [[100.0, 0.0],[101.0, 0.0],[101.0, 1.0],[100.0, 1.0],[100.0, 0.0]]
+      ]}`))
+      .as('geom'),
+  )
+  .compile();
+console.log(query5.sql, query5.parameters);
+//select ST_Area($1) as "geom" from "table" [ '{"type": "Polygon","coordinates": [[[100.0, 0.0],[101.0, 0.0],[101.0, 1.0],[100.0, 1.0][100.0, 0.0]]]}' ]
 ```
 
 ## Currently supported functions
 
+- area(geo column | Polygon/MultiPolygon /_object, string_/, { useSpheroid? }), see [postgis documentation](https://postgis.net/docs/ST_Area.html)
 - asGeoJSON(column, { maxDecimalDigits?, options? }), see [postgis documentation](https://postgis.net/docs/ST_AsGeoJSON.html)
 - geomFromGeoJSON(GeoJSON /_object, string or column name_/), see [postgis documentation](https://postgis.net/docs/ST_GeomFromGeoJSON.html)
 - geomFromText(WKT string, { srid? }), see [postgis documentation](http://www.postgis.net/docs/ST_GeomFromText.html)

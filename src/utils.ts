@@ -56,6 +56,28 @@ export function throwOnInvalidWKT(value: any) {
   }
 }
 
+export function isGeoJSON<DB, TB extends keyof DB>(
+  value: Geometry | ReferenceExpression<DB, TB>,
+  options: Partial<Options> = {},
+): value is Geometry {
+  const optionsWithDefault = withDefaultOptions(options);
+  if (isString(value) || isRawBuilder(value)) {
+    return false;
+  }
+
+  if (isExpressionWrapper(value)) {
+    const node = value.toOperationNode();
+    if (ValueNode.is(node)) {
+      optionsWithDefault.validate && throwOnInvalidGeometry(node.value);
+      return true;
+    }
+    return false;
+  }
+
+  optionsWithDefault.validate && throwOnInvalidGeometry(value);
+  return true;
+}
+
 export function valueForGeoJSON<DB, TB extends keyof DB>(
   value: Geometry | ReferenceExpression<DB, TB>,
   options: Partial<Options> = {},

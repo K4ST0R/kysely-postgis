@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { asGeoJSON, geomFromGeoJSON, geomFromText } from './functions';
+import { area, asGeoJSON, geomFromGeoJSON, geomFromText } from './functions';
 import { Kysely } from 'kysely';
 
 declare global {
@@ -98,5 +98,59 @@ describe('geomFromText', () => {
         .selectFrom('test')
         .select((eb) => geomFromText(eb, 'error').as('alias')),
     ).toThrowError('Invalid WKT');
+  });
+});
+
+describe('area', () => {
+  test('column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => area(eb, 'geom').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe('select ST_Area("geom") as "alias" from "test"');
+  });
+
+  test('GeoJSON argument', () => {
+    const query = db.selectFrom('test').select((eb) =>
+      area(eb, {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [100.0, 0.0],
+            [101.0, 0.0],
+            [101.0, 1.0],
+            [100.0, 1.0],
+            [100.0, 0.0],
+          ],
+        ],
+      }).as('alias'),
+    );
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Area(ST_GeomFromGeoJSON($1)) as "alias" from "test"',
+    );
+    expect(compiled.parameters[0]).toBe(
+      '{"type":"Polygon","coordinates":[[[100,0],[101,0],[101,1],[100,1],[100,0]]]}',
+    );
+  });
+
+  test('GeoJSON string argument', () => {
+    const query = db.selectFrom('test').select((eb) =>
+      area(
+        eb,
+        eb.val(`{"type": "Polygon","coordinates": [
+        [[100.0, 0.0],[101.0, 0.0],[101.0, 1.0],[100.0, 1.0],[100.0, 0.0]]
+      ]}`),
+      ).as('alias'),
+    );
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Area(ST_GeomFromGeoJSON($1)) as "alias" from "test"',
+    );
+    expect(compiled.parameters[0]).toBe(
+      `{"type": "Polygon","coordinates": [
+        [[100.0, 0.0],[101.0, 0.0],[101.0, 1.0],[100.0, 1.0],[100.0, 0.0]]
+      ]}`,
+    );
   });
 });
