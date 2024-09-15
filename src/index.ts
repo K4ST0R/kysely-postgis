@@ -1,7 +1,7 @@
 'use strict';
 
 import { ExpressionBuilder, ReferenceExpression } from 'kysely';
-import { asGeoJSON, geomFromGeoJSON } from './functions';
+import { asGeoJSON, geomFromGeoJSON, geomFromText } from './functions';
 import { Geometry } from 'geojson';
 
 export * from './functions';
@@ -28,5 +28,6 @@ export function stf<DB, TB extends keyof DB>(eb: ExpressionBuilder<DB, TB>) {
     asGeoJSON: (column: ReferenceExpression<DB, TB>) => asGeoJSON(eb, column),
     geomFromGeoJSON: (value: Geometry | ReferenceExpression<DB, TB>) =>
       geomFromGeoJSON(eb, value),
+    geomFromText: (value: string) => geomFromText(eb, value),
   };
 }

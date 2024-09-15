@@ -78,17 +78,10 @@ export function valueForGeoJSON<DB, TB extends keyof DB>(
 }
 
 export function valueForWKT<DB, TB extends keyof DB>(
-  value: ReferenceExpression<DB, TB>,
+  value: string,
   options: Partial<Options> = {},
 ) {
   const optionsWithDefault = withDefaultOptions(options);
-
-  if (isExpressionWrapper(value)) {
-    const node = value.toOperationNode();
-    if (ValueNode.is(node)) {
-      optionsWithDefault.validate && throwOnInvalidWKT(node.value);
-    }
-  }
-
-  return value;
+  optionsWithDefault.validate && throwOnInvalidWKT(value);
+  return sql.val(value);
 }

@@ -13,6 +13,8 @@ import {
 } from './utils';
 import { Options } from './index';
 
+type SRID = number;
+
 interface OptionsAsGeoJSON extends Options {
   maxDecimalDigits?: number;
   options?: number;
@@ -33,9 +35,8 @@ export function asGeoJSON<DB, TB extends keyof DB>(
       ? [sql.val<number>(optionsWithDefault.maxDecimalDigits ?? 9)]
       : [];
 
-  const geo = valueForWKT(column, optionsWithDefault);
   return eb.fn<string>('ST_AsGeoJSON', [
-    geo,
+    column,
     ...maxDecimalDigits,
     ...fnOptions,
   ]);
@@ -49,4 +50,23 @@ export function geomFromGeoJSON<DB, TB extends keyof DB>(
   const optionsWithDefault = withDefaultOptions(options);
   const geo = valueForGeoJSON(value, optionsWithDefault);
   return eb.fn<string>('ST_GeomFromGeoJSON', [geo]);
+}
+
+interface OptionsFromGeoText extends Options {
+  srid?: SRID;
+}
+
+export function geomFromText<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  value: string,
+  options: Partial<OptionsFromGeoText> = {},
+): ExpressionWrapper<DB, TB, string> {
+  const optionsWithDefault = withDefaultOptions(options);
+  const geo = valueForWKT(value, optionsWithDefault);
+  return eb.fn<string>('ST_GeomFromText', [
+    geo,
+    ...(isNil(optionsWithDefault.srid)
+      ? []
+      : [sql.val<number>(optionsWithDefault.srid)]),
+  ]);
 }
