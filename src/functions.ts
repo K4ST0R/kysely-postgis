@@ -6,6 +6,7 @@ import {
   sql,
 } from 'kysely';
 import {
+  fnWithAdditionalParameters,
   isGeoJSON,
   isNil,
   valueForGeoJSON,
@@ -22,15 +23,6 @@ export type SRID = number;
 export interface OptionsAsGeoJSON extends Options {
   maxDecimalDigits?: number;
   options?: number;
-}
-
-function fnWithAdditionalParameters<DB, TB extends keyof DB>(
-  eb: ExpressionBuilder<DB, TB>,
-  fnName: string,
-  args: any[],
-  options: Options,
-) {
-  return eb.fn<string>(fnName, [...args, ...options.additionalParameters]);
 }
 
 export function asGeoJSON<DB, TB extends keyof DB>(

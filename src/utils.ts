@@ -1,4 +1,5 @@
 import {
+  ExpressionBuilder,
   ExpressionWrapper,
   RawBuilder,
   ReferenceExpression,
@@ -106,4 +107,13 @@ export function valueForWKT<DB, TB extends keyof DB>(
   const optionsWithDefault = withDefaultOptions(options);
   optionsWithDefault.validate && throwOnInvalidWKT(value);
   return sql.val(value);
+}
+
+export function fnWithAdditionalParameters<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  fnName: string,
+  args: any[],
+  options: Options,
+) {
+  return eb.fn<string>(fnName, [...args, ...options.additionalParameters]);
 }
