@@ -27,6 +27,7 @@
   "devDependencies": {
     "@types/geojson": "^7946.0.14",
     "@types/geojson-validation": "^1.0.3",
+    "install-peers": "^1.0.4",
     "prettier": "^3.3.3",
     "tsup": "^8.2.4",
     "tsx": "^4.19.1",
