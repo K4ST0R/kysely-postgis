@@ -11,7 +11,6 @@ import {
   geomFromGeoJSON,
   geomFromText,
   OptionsArea,
-  OptionsAsGeoJSON,
   OptionsFromGeoText,
 } from './functions';
 import { Geometry, GeometryCollection, MultiPolygon, Polygon } from 'geojson';
@@ -36,38 +35,24 @@ export function setDefaultOptions(options: Partial<Options>) {
   };
 }
 
+type Tail<T extends any[]> = T extends [infer A, ...infer R] ? R : never;
+type STParams<F extends (...args: any) => any> = Tail<Parameters<F>>;
+
 // stf for spatial type functions
 export function stf<DB, TB extends keyof DB>(eb: ExpressionBuilder<DB, TB>) {
   return {
-    asGeoJSON: (
-      column: ReferenceExpression<DB, TB>,
-      options: Partial<OptionsAsGeoJSON> = {},
-    ) => asGeoJSON(eb, column, options),
-    geomFromGeoJSON: (
-      value: Geometry | ReferenceExpression<DB, TB>,
-      options: Partial<Options> = {},
-    ) => geomFromGeoJSON(eb, value, options),
-    geomFromText: (value: string, options: Partial<OptionsFromGeoText> = {}) =>
-      geomFromText(eb, value, options),
-    area: (
-      value: Polygon | MultiPolygon | ReferenceExpression<DB, TB>,
-      options: Partial<OptionsArea> = {},
-    ) => area(eb, value, options),
-    asText: (value: ReferenceExpression<DB, TB>) => asText(eb, value),
-    boundary: (
-      value:
-        | Exclude<Geometry, GeometryCollection>
-        | ReferenceExpression<DB, TB>,
-      options: Partial<Options> = {},
-    ) => boundary(eb, value, options),
-    buffer: (
-      value: Geometry | ReferenceExpression<DB, TB>,
-      radius: number,
-      options: Partial<Options> = {},
-    ) => buffer(eb, value, radius, options),
-    centroid: (
-      value: Geometry | ReferenceExpression<DB, TB>,
-      options: Partial<Options> = {},
-    ) => centroid(eb, value, options),
+    asGeoJSON: (...args: STParams<typeof asGeoJSON<DB, TB>>) =>
+      asGeoJSON(eb, ...args),
+    geomFromGeoJSON: (...args: STParams<typeof geomFromGeoJSON<DB, TB>>) =>
+      geomFromGeoJSON(eb, ...args),
+    geomFromText: (...args: STParams<typeof geomFromText<DB, TB>>) =>
+      geomFromText(eb, ...args),
+    area: (...args: STParams<typeof area<DB, TB>>) => area(eb, ...args),
+    asText: (...args: STParams<typeof asText<DB, TB>>) => asText(eb, ...args),
+    boundary: (...args: STParams<typeof boundary<DB, TB>>) =>
+      boundary(eb, ...args),
+    buffer: (...args: STParams<typeof buffer<DB, TB>>) => buffer(eb, ...args),
+    centroid: (...args: STParams<typeof centroid<DB, TB>>) =>
+      centroid(eb, ...args),
   };
 }

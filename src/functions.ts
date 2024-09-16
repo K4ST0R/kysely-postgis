@@ -139,7 +139,7 @@ export function buffer<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
   value: Geometry | ReferenceExpression<DB, TB>,
   radius: number,
-  options: Partial<Options>,
+  options: Partial<Options> = {},
 ): ExpressionWrapper<DB, TB, string> {
   const optionsWithDefault = withDefaultOptions(options);
   const isGeo = isGeoJSON(value);
