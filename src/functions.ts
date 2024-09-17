@@ -1,24 +1,26 @@
-import { Geometry, MultiPolygon, Polygon } from 'geojson';
 import {
-  ExpressionBuilder,
-  ExpressionWrapper,
-  ReferenceExpression,
-  sql,
-} from 'kysely';
+  GeometryCollection,
+  Geometry,
+  MultiPolygon,
+  Point,
+  Polygon,
+} from 'geojson';
+import { ExpressionBuilder, ReferenceExpression, sql } from 'kysely';
 import {
+  fnCompare,
   fnWithAdditionalParameters,
-  isGeoJSON,
   isNil,
+  transformGeoJSON,
   valueForGeoJSON,
   valueForWKT,
   withDefaultOptions,
 } from './utils';
-import { Options } from './index';
-import { GeometryCollection } from 'wkx';
+import { SRID } from './types';
 
-export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;
-
-export type SRID = number;
+export interface Options {
+  validate: boolean;
+  additionalParameters: any[]; // Pass these parameters to the ST function
+}
 
 export interface OptionsAsGeoJSON extends Options {
   maxDecimalDigits?: number;
@@ -29,7 +31,7 @@ export function asGeoJSON<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
   column: ReferenceExpression<DB, TB>,
   options: Partial<OptionsAsGeoJSON> = {},
-): ExpressionWrapper<DB, TB, string> {
+) {
   const optionsWithDefault = withDefaultOptions(options);
 
   const fnOptions = isNil(options.options)
@@ -48,11 +50,15 @@ export function asGeoJSON<DB, TB extends keyof DB>(
   );
 }
 
+export interface OptionsFromGeoText extends Options {
+  srid?: SRID;
+}
+
 export function geomFromGeoJSON<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
   value: Geometry | ReferenceExpression<DB, TB>,
   options: Partial<Options> = {},
-): ExpressionWrapper<DB, TB, string> {
+) {
   const optionsWithDefault = withDefaultOptions(options);
   const geo = valueForGeoJSON(value, optionsWithDefault);
   return fnWithAdditionalParameters(
@@ -63,15 +69,11 @@ export function geomFromGeoJSON<DB, TB extends keyof DB>(
   );
 }
 
-export interface OptionsFromGeoText extends Options {
-  srid?: SRID;
-}
-
 export function geomFromText<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
   value: string,
   options: Partial<OptionsFromGeoText> = {},
-): ExpressionWrapper<DB, TB, string> {
+) {
   const optionsWithDefault = withDefaultOptions(options);
   const geo = valueForWKT(value, optionsWithDefault);
   return fnWithAdditionalParameters(
@@ -95,15 +97,14 @@ export function area<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
   value: Polygon | MultiPolygon | ReferenceExpression<DB, TB>,
   options: Partial<OptionsArea> = {},
-): ExpressionWrapper<DB, TB, string> {
+) {
   const optionsWithDefault = withDefaultOptions(options);
-  const isGeo = isGeoJSON(value);
 
   return fnWithAdditionalParameters(
     eb,
     'ST_Area',
     [
-      isGeo ? geomFromGeoJSON(eb, value, options) : value,
+      transformGeoJSON(eb, value, optionsWithDefault),
       ...(isNil(optionsWithDefault.useSpheroid)
         ? []
         : [sql.val<boolean>(optionsWithDefault.useSpheroid)]),
@@ -115,7 +116,7 @@ export function area<DB, TB extends keyof DB>(
 export function asText<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
   column: ReferenceExpression<DB, TB>,
-): ExpressionWrapper<DB, TB, string> {
+) {
   return eb.fn<string>('ST_AsText', [column]);
 }
 
@@ -123,14 +124,13 @@ export function boundary<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
   value: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
   options: Partial<Options> = {},
-): ExpressionWrapper<DB, TB, string> {
+) {
   const optionsWithDefault = withDefaultOptions(options);
-  const isGeo = isGeoJSON(value);
 
   return fnWithAdditionalParameters(
     eb,
     'ST_Boundary',
-    [isGeo ? geomFromGeoJSON(eb, value, options) : value],
+    [transformGeoJSON(eb, value, optionsWithDefault)],
     optionsWithDefault,
   );
 }
@@ -140,17 +140,13 @@ export function buffer<DB, TB extends keyof DB>(
   value: Geometry | ReferenceExpression<DB, TB>,
   radius: number,
   options: Partial<Options> = {},
-): ExpressionWrapper<DB, TB, string> {
+) {
   const optionsWithDefault = withDefaultOptions(options);
-  const isGeo = isGeoJSON(value);
 
   return fnWithAdditionalParameters(
     eb,
     'ST_Buffer',
-    [
-      isGeo ? geomFromGeoJSON(eb, value, options) : value,
-      sql.val<number>(radius),
-    ],
+    [transformGeoJSON(eb, value, optionsWithDefault), sql.val<number>(radius)],
     optionsWithDefault,
   );
 }
@@ -159,14 +155,132 @@ export function centroid<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
   value: Geometry | ReferenceExpression<DB, TB>,
   options: Partial<Options> = {},
-): ExpressionWrapper<DB, TB, string> {
+) {
   const optionsWithDefault = withDefaultOptions(options);
-  const isGeo = isGeoJSON(value);
 
   return fnWithAdditionalParameters(
     eb,
     'ST_Centroid',
-    [isGeo ? geomFromGeoJSON(eb, value, options) : value],
+    [transformGeoJSON(eb, value, optionsWithDefault)],
     optionsWithDefault,
   );
+}
+
+export function contains<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  geomA: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  geomB: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  options: Partial<Options> = {},
+) {
+  return fnCompare(eb, 'ST_Contains', geomA, geomB, [], options);
+}
+
+export function covers<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  geomA: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  geomB: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  options: Partial<Options> = {},
+) {
+  return fnCompare(eb, 'ST_Covers', geomA, geomB, [], options);
+}
+
+export function crosses<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  geomA: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  geomB: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  options: Partial<Options> = {},
+) {
+  return fnCompare(eb, 'ST_Crosses', geomA, geomB, [], options);
+}
+
+export function dWithin<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  geomA: Geometry | ReferenceExpression<DB, TB>,
+  geomB: Geometry | ReferenceExpression<DB, TB>,
+  distance: number,
+  options: Partial<Options> = {},
+) {
+  return fnCompare(
+    eb,
+    'ST_DWithin',
+    geomA,
+    geomB,
+    [sql.val<number>(distance)],
+    options,
+  );
+}
+
+export function difference<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  geomA: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  geomB: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  options: Partial<Options> = {},
+) {
+  const optionsWithDefault = withDefaultOptions(options);
+
+  return fnWithAdditionalParameters(
+    eb,
+    'ST_Difference',
+    [
+      transformGeoJSON(eb, geomA, optionsWithDefault),
+      transformGeoJSON(eb, geomB, optionsWithDefault),
+    ],
+    optionsWithDefault,
+  );
+}
+
+export function disjoint<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  geomA: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  geomB: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  options: Partial<Options> = {},
+) {
+  return fnCompare(eb, 'ST_Disjoint', geomA, geomB, [], options);
+}
+
+export function distance<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  geomA: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  geomB: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  options: Partial<Options> = {},
+) {
+  const optionsWithDefault = withDefaultOptions(options);
+
+  return fnWithAdditionalParameters<DB, TB, number>(
+    eb,
+    'ST_Distance',
+    [
+      transformGeoJSON(eb, geomA, optionsWithDefault),
+      transformGeoJSON(eb, geomB, optionsWithDefault),
+    ],
+    optionsWithDefault,
+  );
+}
+
+export function distanceSphere<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  geomA: Point | ReferenceExpression<DB, TB>,
+  geomB: Point | ReferenceExpression<DB, TB>,
+  options: Partial<Options> = {},
+) {
+  const optionsWithDefault = withDefaultOptions(options);
+
+  return fnWithAdditionalParameters<DB, TB, number>(
+    eb,
+    'ST_Distance_Sphere',
+    [
+      transformGeoJSON(eb, geomA, optionsWithDefault),
+      transformGeoJSON(eb, geomB, optionsWithDefault),
+    ],
+    optionsWithDefault,
+  );
+}
+
+export function equals<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  geomA: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  geomB: Exclude<Geometry, GeometryCollection> | ReferenceExpression<DB, TB>,
+  options: Partial<Options> = {},
+) {
+  return fnCompare(eb, 'ST_Equals', geomA, geomB, [], options);
 }

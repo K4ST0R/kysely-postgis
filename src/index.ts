@@ -1,6 +1,6 @@
 'use strict';
 
-import { ExpressionBuilder, ReferenceExpression } from 'kysely';
+import { ExpressionBuilder } from 'kysely';
 import {
   area,
   asGeoJSON,
@@ -8,19 +8,22 @@ import {
   boundary,
   buffer,
   centroid,
+  contains,
+  covers,
+  crosses,
+  difference,
+  disjoint,
+  distance,
+  distanceSphere,
+  dWithin,
+  equals,
   geomFromGeoJSON,
   geomFromText,
-  OptionsArea,
-  OptionsFromGeoText,
+  Options,
 } from './functions';
-import { Geometry, GeometryCollection, MultiPolygon, Polygon } from 'geojson';
+import { STParams } from './types';
 
 export * from './functions';
-
-export interface Options {
-  validate: boolean;
-  additionalParameters: any[]; // Pass these parameters to the ST function
-}
 
 // Global options
 export let defaultOptions: Options = {
@@ -34,9 +37,6 @@ export function setDefaultOptions(options: Partial<Options>) {
     ...options,
   };
 }
-
-type Tail<T extends any[]> = T extends [infer A, ...infer R] ? R : never;
-type STParams<F extends (...args: any) => any> = Tail<Parameters<F>>;
 
 // stf for spatial type functions
 export function stf<DB, TB extends keyof DB>(eb: ExpressionBuilder<DB, TB>) {
@@ -54,5 +54,21 @@ export function stf<DB, TB extends keyof DB>(eb: ExpressionBuilder<DB, TB>) {
     buffer: (...args: STParams<typeof buffer<DB, TB>>) => buffer(eb, ...args),
     centroid: (...args: STParams<typeof centroid<DB, TB>>) =>
       centroid(eb, ...args),
+    contains: (...args: STParams<typeof contains<DB, TB>>) =>
+      contains(eb, ...args),
+    covers: (...args: STParams<typeof covers<DB, TB>>) => covers(eb, ...args),
+    crosses: (...args: STParams<typeof crosses<DB, TB>>) =>
+      crosses(eb, ...args),
+    dWithin: (...args: STParams<typeof dWithin<DB, TB>>) =>
+      dWithin(eb, ...args),
+    difference: (...args: STParams<typeof difference<DB, TB>>) =>
+      difference(eb, ...args),
+    disjoint: (...args: STParams<typeof disjoint<DB, TB>>) =>
+      disjoint(eb, ...args),
+    distance: (...args: STParams<typeof distance<DB, TB>>) =>
+      distance(eb, ...args),
+    distanceSphere: (...args: STParams<typeof distanceSphere<DB, TB>>) =>
+      distanceSphere(eb, ...args),
+    equals: (...args: STParams<typeof equals<DB, TB>>) => equals(eb, ...args),
   };
 }
