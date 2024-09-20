@@ -765,3 +765,292 @@ describe('equals', () => {
     );
   });
 });
+
+describe('expand', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).expand('geoma', 1).as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Expand("geoma", $1) as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([1]);
+  });
+});
+
+describe('geoHash', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).geoHash('geoma').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_GeoHash("geoma") as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('intersection', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).intersection('geoma', 'geomb').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Intersection("geoma", "geomb") as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('intersects', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).intersects('geoma', 'geomb').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Intersects("geoma", "geomb") as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('intersects', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).intersects('geoma', 'geomb').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Intersects("geoma", "geomb") as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('isValid', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).isValid('geoma').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_IsValid("geoma") as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('makeValid', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).makeValid('geoma').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_MakeValid("geoma") as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('maxDistance', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).maxDistance('geoma', 'geomb').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_MaxDistance("geoma", "geomb") as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('overlaps', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).overlaps('geoma', 'geomb').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Overlaps("geoma", "geomb") as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('srid', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).srid('geoma').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe('select ST_SRID("geoma") as "alias" from "test"');
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('scale', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).scale('geoma', 1, 2).as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Scale("geoma", $1, $2) as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([1, 2]);
+  });
+});
+
+describe('segmentize', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).segmentize('geoma', 1).as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Segmentize("geoma", $1) as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([1]);
+  });
+});
+
+describe('setSRID', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).setSRID('geoma', 1).as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_SetSRID("geoma", $1) as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([1]);
+  });
+});
+
+describe('simplify', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).simplify('geoma', 1).as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Simplify("geoma", $1) as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([1]);
+  });
+});
+
+describe('simplifyPreserveTopology', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).simplifyPreserveTopology('geoma', 1).as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_SimplifyPreserveTopology("geoma", $1) as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([1]);
+  });
+});
+
+describe('transform', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).transform('geoma', 1).as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Transform("geoma", $1) as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([1]);
+  });
+});
+
+describe('translate', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).translate('geoma', 1, 2).as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Translate("geoma", $1, $2) as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([1, 2]);
+  });
+});
+
+describe('union', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).union('geoma', 'geomb').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Union("geoma", "geomb") as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('within', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).within('geoma', 'geomb').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Within("geoma", "geomb") as "alias" from "test"',
+    );
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('x', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).x('geoma').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe('select ST_X("geoma") as "alias" from "test"');
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('y', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).y('geoma').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe('select ST_Y("geoma") as "alias" from "test"');
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('z', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).z('geoma').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe('select ST_Z("geoma") as "alias" from "test"');
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
+
+describe('m', () => {
+  test('Column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).m('geoma').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe('select ST_M("geoma") as "alias" from "test"');
+    expect(compiled.parameters).toStrictEqual([]);
+  });
+});
