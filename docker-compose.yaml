@@ -1,0 +1,12 @@
+services:
+  kysely-postgis:
+    build:
+      context: e2e
+      dockerfile: postgis.dockerfile
+    ports:
+      - "54321:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    restart: unless-stopped
