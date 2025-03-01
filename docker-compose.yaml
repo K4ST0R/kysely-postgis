@@ -1,10 +1,10 @@
 services:
   kysely-postgis:
     build:
-      context: e2e
-      dockerfile: postgis.dockerfile
+      context: e2e/docker
+      dockerfile: postgresql-15-postgis-3.dockerfile
     ports:
-      - "54321:5432"
+      - "15003:5432"
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
