@@ -11,5 +11,5 @@ export const dbE2e = {
         connectionString: createConnectionString(15003),
       }),
     }),
-  })
+  }),
 };
