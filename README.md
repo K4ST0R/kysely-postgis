@@ -145,3 +145,4 @@ console.log(query6.sql, query6.parameters);
 - y(geoa column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_Y.html)
 - z(geoa column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_Z.html)
 - m(geoa column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_M.html)
+- makePoint(x number, y number, { srid? }), see [postgis documentation](https://postgis.net/docs/ST_MakePoint.html)

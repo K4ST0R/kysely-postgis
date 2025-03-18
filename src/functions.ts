@@ -642,6 +642,35 @@ export function m<DB, TB extends keyof DB>(
   );
 }
 
+export function makePoint<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  x: number | ReferenceExpression<DB, TB>,
+  y: number | ReferenceExpression<DB, TB>,
+  z?: number | ReferenceExpression<DB, TB>,
+  m?: number | ReferenceExpression<DB, TB>,
+  options: Partial<Options> = {},
+) {
+  const optionsWithDefault = withDefaultOptions(options);
+
+  // Constructing the parameters for the ST_MakePoint function
+  const params = [sql.val(x), sql.val(y)];
+
+  if (z !== undefined) {
+    params.push(sql.val(z));
+  }
+
+  if (m !== undefined) {
+    params.push(sql.val(m));
+  }
+
+  return fnWithAdditionalParameters(
+    eb,
+    'ST_MakePoint',
+    params,
+    optionsWithDefault,
+  );
+}
+
 // stf for spatial type functions
 export function stf<DB, TB extends keyof DB>(eb: ExpressionBuilder<DB, TB>) {
   return {
@@ -710,5 +739,6 @@ export function stf<DB, TB extends keyof DB>(eb: ExpressionBuilder<DB, TB>) {
     y: (...args: STParams<typeof y<DB, TB>>) => y(eb, ...args),
     z: (...args: STParams<typeof z<DB, TB>>) => z(eb, ...args),
     m: (...args: STParams<typeof m<DB, TB>>) => m(eb, ...args),
+    makePoint: (...args: STParams<typeof makePoint<DB, TB>>) => makePoint(eb, ...args),
   };
 }
