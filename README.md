@@ -119,7 +119,7 @@ console.log(query6.sql, query6.parameters);
 - difference(geoa column | GeoJSON /_object, string_/, geob column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_Difference.html)
 - disjoint(geoa column | GeoJSON /_object, string_/, geob column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_Disjoint.html)
 - distance(geoa column | GeoJSON /_object, string_/, geob column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_Distance.html)
-- distanceSphere(geoa column | GeoJSON /_object, string_/, geob column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_Distance_Sphere.html)
+- distanceSphere(geoa column | GeoJSON /_object, string_/, geob column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_DistanceSphere.html)
 - equals(geoa column | GeoJSON /_object, string_/, geob column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_Equals.html)
 - expand(geoa column | GeoJSON /_object, string_/, unitsToExpand number), see [postgis documentation](https://postgis.net/docs/ST_Expand.html)
 - geomFromGeoJSON(GeoJSON /_object, string or column name_/), see [postgis documentation](https://postgis.net/docs/ST_GeomFromGeoJSON.html)

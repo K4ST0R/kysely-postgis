@@ -749,7 +749,7 @@ describe('distanceSphere', () => {
       .select((eb) => stf(eb).distanceSphere('geoma', 'geomb').as('alias'));
     const compiled = query.compile();
     expect(compiled.sql).toBe(
-      'select ST_Distance_Sphere("geoma", "geomb") as "alias" from "test"',
+      'select ST_DistanceSphere("geoma", "geomb") as "alias" from "test"',
     );
   });
 });

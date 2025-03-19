@@ -267,7 +267,7 @@ export function distanceSphere<DB, TB extends keyof DB>(
 
   return fnWithAdditionalParameters<DB, TB, number>(
     eb,
-    'ST_Distance_Sphere',
+    'ST_DistanceSphere',
     [
       transformGeoJSON(eb, geomA, optionsWithDefault),
       transformGeoJSON(eb, geomB, optionsWithDefault),
