@@ -1069,21 +1069,22 @@ describe('makePoint', () => {
     expect(compiled.parameters).toStrictEqual([
       -71.1043443253471, 42.3150676015829,
     ]);
+  });
 
-test('Column argument with optional parameters', () => {
+  test('Column argument with optional parameters', () => {
     const query = db
       .selectFrom('test')
       .select((eb) =>
-        stf(eb).makePoint(-71.1043443253471, 42.3150676015829, 1.42, 3,14).as('alias'),
+        stf(eb)
+          .makePoint(-71.1043443253471, 42.3150676015829, 1.42, 3.14)
+          .as('alias'),
       );
     const compiled = query.compile();
     expect(compiled.sql).toBe(
       'select ST_MakePoint($1, $2, $3, $4) as "alias" from "test"',
     );
     expect(compiled.parameters).toStrictEqual([
-      -71.1043443253471, 42.3150676015829, 1.42, 3,14
+      -71.1043443253471, 42.3150676015829, 1.42, 3.14,
     ]);
-  });
-  
   });
 });
