@@ -677,7 +677,7 @@ export function xMin<DB, TB extends keyof DB>(
   options: Partial<Options> = {},
 ) {
   const optionsWithDefault = withDefaultOptions(options);
-  
+
   return fnWithAdditionalParameters<DB, TB, number>(
     eb,
     'ST_XMin',
@@ -692,7 +692,7 @@ export function yMin<DB, TB extends keyof DB>(
   options: Partial<Options> = {},
 ) {
   const optionsWithDefault = withDefaultOptions(options);
-  
+
   return fnWithAdditionalParameters<DB, TB, number>(
     eb,
     'ST_YMin',
@@ -707,7 +707,7 @@ export function zMin<DB, TB extends keyof DB>(
   options: Partial<Options> = {},
 ) {
   const optionsWithDefault = withDefaultOptions(options);
-  
+
   return fnWithAdditionalParameters<DB, TB, number>(
     eb,
     'ST_ZMin',
@@ -722,7 +722,7 @@ export function xMax<DB, TB extends keyof DB>(
   options: Partial<Options> = {},
 ) {
   const optionsWithDefault = withDefaultOptions(options);
-  
+
   return fnWithAdditionalParameters<DB, TB, number>(
     eb,
     'ST_XMax',
@@ -737,7 +737,7 @@ export function yMax<DB, TB extends keyof DB>(
   options: Partial<Options> = {},
 ) {
   const optionsWithDefault = withDefaultOptions(options);
-  
+
   return fnWithAdditionalParameters<DB, TB, number>(
     eb,
     'ST_YMax',
@@ -752,7 +752,7 @@ export function zMax<DB, TB extends keyof DB>(
   options: Partial<Options> = {},
 ) {
   const optionsWithDefault = withDefaultOptions(options);
-  
+
   return fnWithAdditionalParameters<DB, TB, number>(
     eb,
     'ST_ZMax',
@@ -764,10 +764,9 @@ export function zMax<DB, TB extends keyof DB>(
 export function extent<DB, TB extends keyof DB>(
   eb: ExpressionBuilder<DB, TB>,
   geom: GeoJSON.Geometry | ReferenceExpression<DB, TB>,
-  options: Partial<Options> = {},
 ) {
-  const optionsWithDefault = withDefaultOptions(options);
-  
+  const optionsWithDefault = withDefaultOptions({});
+
   return fnWithAdditionalParameters<DB, TB, string>(
     eb,
     'ST_Extent',
@@ -776,6 +775,19 @@ export function extent<DB, TB extends keyof DB>(
   );
 }
 
+export function extent3d<DB, TB extends keyof DB>(
+  eb: ExpressionBuilder<DB, TB>,
+  geom: GeoJSON.Geometry | ReferenceExpression<DB, TB>,
+) {
+  const optionsWithDefault = withDefaultOptions({});
+
+  return fnWithAdditionalParameters<DB, TB, string>(
+    eb,
+    'ST_3DExtent',
+    [transformGeoJSON(eb, geom, optionsWithDefault)],
+    optionsWithDefault,
+  );
+}
 // stf for spatial type functions
 export function stf<DB, TB extends keyof DB>(eb: ExpressionBuilder<DB, TB>) {
   return {
@@ -844,14 +856,16 @@ export function stf<DB, TB extends keyof DB>(eb: ExpressionBuilder<DB, TB>) {
     y: (...args: STParams<typeof y<DB, TB>>) => y(eb, ...args),
     z: (...args: STParams<typeof z<DB, TB>>) => z(eb, ...args),
     m: (...args: STParams<typeof m<DB, TB>>) => m(eb, ...args),
-    makePoint: (...args: STParams<typeof makePoint<DB, TB>>) => 
+    makePoint: (...args: STParams<typeof makePoint<DB, TB>>) =>
       makePoint(eb, ...args),
-    xMin:(...args:STParams<typeof xMin<DB,TB>>)=>xMin(eb,...args),
-    yMin:(...args:STParams<typeof yMin<DB,TB>>)=>yMin(eb,...args),
-    zMin:(...args:STParams<typeof zMin<DB,TB>>)=>zMin(eb,...args),
-    xMax:(...args:STParams<typeof xMax<DB,TB>>)=>xMax(eb,...args),
-    yMax:(...args:STParams<typeof yMax<DB,TB>>)=>yMax(eb,...args),
-    zMax:(...args:STParams<typeof zMax<DB,TB>>)=>zMax(eb,...args),
+    xMin: (...args: STParams<typeof xMin<DB, TB>>) => xMin(eb, ...args),
+    yMin: (...args: STParams<typeof yMin<DB, TB>>) => yMin(eb, ...args),
+    zMin: (...args: STParams<typeof zMin<DB, TB>>) => zMin(eb, ...args),
+    xMax: (...args: STParams<typeof xMax<DB, TB>>) => xMax(eb, ...args),
+    yMax: (...args: STParams<typeof yMax<DB, TB>>) => yMax(eb, ...args),
+    zMax: (...args: STParams<typeof zMax<DB, TB>>) => zMax(eb, ...args),
     extent: (...args: STParams<typeof extent<DB, TB>>) => extent(eb, ...args),
+    extent3d: (...args: STParams<typeof extent<DB, TB>>) =>
+      extent3d(eb, ...args),
   };
 }
