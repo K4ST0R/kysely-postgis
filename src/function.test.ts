@@ -1219,3 +1219,62 @@ describe('zMax', () => {
     );
   });
 })
+
+describe('extent3d', () => {
+  test('column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).extent3d('geom').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_3DExtent("geom") as "alias" from "test"',
+    );
+  });
+
+  test('GeoJSON argument', () => {
+    const query = db.selectFrom('test').select((eb) =>
+      stf(eb)
+        .extent3d({
+          type: 'Polygon',
+          coordinates: [
+            [
+              [100.0, 0.0],
+              [101.0, 0.0],
+              [101.0, 1.0],
+              [100.0, 1.0],
+              [100.0, 0.0],
+            ],
+          ],
+        })
+        .as('alias'),
+    );
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_3DExtent(ST_GeomFromGeoJSON($1)) as "alias" from "test"',
+    );
+    expect(compiled.parameters[0]).toBe(
+      '{"type":"Polygon","coordinates":[[[100,0],[101,0],[101,1],[100,1],[100,0]]]}',
+    );
+  });
+
+  test('GeoJSON string argument', () => {
+    const query = db.selectFrom('test').select((eb) =>
+      stf(eb)
+        .extent(
+          eb.val(`{"type": "Polygon","coordinates": [
+            [[100.0, 0.0],[101.0, 0.0],[101.0, 1.0],[100.0, 1.0],[100.0, 0.0]]
+          ]}`),
+        )
+        .as('alias'),
+    );
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Extent(ST_GeomFromGeoJSON($1)) as "alias" from "test"',
+    );
+    expect(compiled.parameters[0]).toBe(
+      `{"type": "Polygon","coordinates": [
+            [[100.0, 0.0],[101.0, 0.0],[101.0, 1.0],[100.0, 1.0],[100.0, 0.0]]
+          ]}`,
+    );
+  });
+});
