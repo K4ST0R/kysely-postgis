@@ -1088,3 +1088,134 @@ describe('makePoint', () => {
     ]);
   });
 });
+
+describe('extent', () => {
+  test('column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).extent('geom').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Extent("geom") as "alias" from "test"',
+    );
+  });
+
+  test('GeoJSON argument', () => {
+    const query = db.selectFrom('test').select((eb) =>
+      stf(eb)
+        .extent({
+          type: 'Polygon',
+          coordinates: [
+            [
+              [100.0, 0.0],
+              [101.0, 0.0],
+              [101.0, 1.0],
+              [100.0, 1.0],
+              [100.0, 0.0],
+            ],
+          ],
+        })
+        .as('alias'),
+    );
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Extent(ST_GeomFromGeoJSON($1)) as "alias" from "test"',
+    );
+    expect(compiled.parameters[0]).toBe(
+      '{"type":"Polygon","coordinates":[[[100,0],[101,0],[101,1],[100,1],[100,0]]]}',
+    );
+  });
+
+  test('GeoJSON string argument', () => {
+    const query = db.selectFrom('test').select((eb) =>
+      stf(eb)
+        .extent(
+          eb.val(`{"type": "Polygon","coordinates": [
+            [[100.0, 0.0],[101.0, 0.0],[101.0, 1.0],[100.0, 1.0],[100.0, 0.0]]
+          ]}`),
+        )
+        .as('alias'),
+    );
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_Extent(ST_GeomFromGeoJSON($1)) as "alias" from "test"',
+    );
+    expect(compiled.parameters[0]).toBe(
+      `{"type": "Polygon","coordinates": [
+            [[100.0, 0.0],[101.0, 0.0],[101.0, 1.0],[100.0, 1.0],[100.0, 0.0]]
+          ]}`,
+    );
+  });
+});
+
+describe('xMin', () => {
+  test('column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).xMin('geom').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_XMin("geom") as "alias" from "test"',
+    );
+  });
+});
+
+describe('xMax', () => {
+  test('column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).xMax('geom').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_XMax("geom") as "alias" from "test"',
+    );
+  });
+});
+
+describe('yMin', () => {
+  test('column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).yMin('geom').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_YMin("geom") as "alias" from "test"',
+    );
+  });
+});
+
+describe('yMax', () => {
+  test('column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).yMax('geom').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_YMax("geom") as "alias" from "test"',
+    );
+  });
+});
+
+describe('zMin', () => {
+  test('column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).zMin('geom').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_ZMin("geom") as "alias" from "test"',
+    );
+  });
+});
+
+describe('zMax', () => {
+  test('column argument', () => {
+    const query = db
+      .selectFrom('test')
+      .select((eb) => stf(eb).zMax('geom').as('alias'));
+    const compiled = query.compile();
+    expect(compiled.sql).toBe(
+      'select ST_ZMax("geom") as "alias" from "test"',
+    );
+  });
+})
