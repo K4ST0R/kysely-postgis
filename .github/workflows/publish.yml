@@ -16,6 +16,7 @@ jobs:
           node-version: '24.x'
           registry-url: 'https://registry.npmjs.org'
       - run: yarn install
+      - run: yarn docker:up
       - run: yarn test
       - run: yarn build
       - run: npm publish --provenance --access public

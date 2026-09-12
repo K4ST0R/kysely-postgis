@@ -1,0 +1,12 @@
+services:
+  postgresql-17-postgis-3:
+    build:
+      context: e2e/docker
+      dockerfile: postgresql-17-postgis-3.dockerfile
+    ports:
+      - '17003:5432'
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    restart: unless-stopped
