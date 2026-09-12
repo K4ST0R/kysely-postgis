@@ -6,8 +6,6 @@
 
 Extension to use postgis functions with [kysely](https://kysely.dev/) more easely.
 
-/!\ Early development
-
 ## Example
 
 ```ts
@@ -146,11 +144,11 @@ console.log(query6.sql, query6.parameters);
 - z(geoa column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_Z.html)
 - m(geoa column | GeoJSON /_object, string_/), see [postgis documentation](https://postgis.net/docs/ST_M.html)
 - makePoint(x number, y number, { srid? }), see [postgis documentation](https://postgis.net/docs/ST_MakePoint.html)
-- xMin(geoa column | GeoJSON /_object), see [postgis documentation](https://postgis.net/docs/ST_XMin.html)
-- xMax(geoa column | GeoJSON /_object), see [postgis documentation](https://postgis.net/docs/ST_XMax.html)
-- yMin(geoa column | GeoJSON /_object), see [postgis documentation](https://postgis.net/docs/ST_YMin.html)
-- yMax(geoa column | GeoJSON /_object), see [postgis documentation](https://postgis.net/docs/ST_YMax.html)
-- zMin(geoa column | GeoJSON /_object), see [postgis documentation](https://postgis.net/docs/ST_ZMin.html)
-- zMax(geoa column | GeoJSON /_object), see [postgis documentation](https://postgis.net/docs/ST_ZMax.html)
-- extent(geoa column | GeoJSON /_object), see [postgis documentation](https://postgis.net/docs/ST_Extent.html)
-- extent3D(geoa column | GeoJSON /_object), see [postgis documentation](https://postgis.net/docs/ST_3DExtent.html)
+- xMin(geoa column | GeoJSON /\_object), see [postgis documentation](https://postgis.net/docs/ST_XMin.html)
+- xMax(geoa column | GeoJSON /\_object), see [postgis documentation](https://postgis.net/docs/ST_XMax.html)
+- yMin(geoa column | GeoJSON /\_object), see [postgis documentation](https://postgis.net/docs/ST_YMin.html)
+- yMax(geoa column | GeoJSON /\_object), see [postgis documentation](https://postgis.net/docs/ST_YMax.html)
+- zMin(geoa column | GeoJSON /\_object), see [postgis documentation](https://postgis.net/docs/ST_ZMin.html)
+- zMax(geoa column | GeoJSON /\_object), see [postgis documentation](https://postgis.net/docs/ST_ZMax.html)
+- extent(geoa column | GeoJSON /\_object), see [postgis documentation](https://postgis.net/docs/ST_Extent.html)
+- extent3D(geoa column | GeoJSON /\_object), see [postgis documentation](https://postgis.net/docs/ST_3DExtent.html)
